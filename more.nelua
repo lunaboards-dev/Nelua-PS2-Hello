@@ -1,0 +1,102 @@
+local ps2date : type = @record {
+	unknown1: uint8,
+	sec: uint8,
+	min: uint8,
+	hour: uint8,
+	day: uint8,
+	month: uint8,
+	year: uint16
+}
+
+local mcTable : type <cimport, nodecl> = @record {
+	_create : ps2date,
+	_modify : ps2date,
+	fileSizeByte : uint32,
+	attrFile : uint16,
+	unknown3 : uint16,
+	unknown4 : [2]uint32,
+	name: [32]uint8
+}
+
+## cinclude '<tamtypes.h>'
+## cinclude '<debug.h>'
+## cinclude '<sifrpc.h>'
+## cinclude '<libmc.h>'
+## cinclude '<loadfile.h>'
+## cinclude '<kernel.h>'
+
+require("string")
+
+local function SifInitRpc(mode : cint)  <cimport, nodecl> end
+local function init_scr()  <cimport, nodecl> end
+local function scr_printf(pat : cstring, ... : cvarargs) <cimport, nodecl> end
+local function SifLoadModule(path : cstring, arg_len : cint, args : cstring) : cint <cimport, nodecl> end
+local function mcInit(type : cint) : cint <cimport, nodecl> end
+local function mcGetInfo(port : cint, slot : cint, type : *cint, free : *cint, format : *cint) : cint  <cimport, nodecl> end
+
+
+local function debug_print(fmt : string)
+	print(fmt)
+	scr_printf(fmt)
+end
+
+local function panic(e : string)
+	debug_print("Panic!: "..e)
+	while true do end
+end
+
+local function try_load_module(path : string)
+	debug_print("Attempting to load "..path.."...\n")
+	if (SifLoadModule(path, 0, nilptr) < 0) then
+		panic("Failed to load module: "..path.."\n")
+	end
+end
+
+local modules : [3]string = {
+	"rom0:SIO2MAN",
+	"rom0:XMCMAN",
+	"rom0:XMCSERV"
+}
+
+SifInitRpc(0)
+init_scr()
+--scr_printf("Testing from ".._VERSION.."\n")
+debug_print("Testing from ".._VERSION.."\n")
+--debug_print("fib(100)\n")
+local function print_and_ret(a : int32) : int32
+	debug_print(tostring(a))
+	return a
+end
+
+local function fib_tail_call(n : int32)
+  local function inner(m : int32, a : int32, b : int32)
+    if m == 0 then
+      return a
+    end
+    return print_and_ret(inner(m-1, b, a+b))
+  end
+  return print_and_ret(inner(n, 0, 1))
+end
+--[[fib_tail_call(100)
+debug_print("done!")]]
+--[[debug_print("\nLoading modules...")
+for i=0, <#modules do
+	try_load_module(modules[i])
+end
+debug_print("Load complete!\n")
+if (mcInit(1) < 0) then
+	panic("mcInit failed!")
+end
+debug_print("mcInit complete.\n")
+local mctype : int32
+local mcfree : int32
+local mcformat : int32
+if (mcGetInfo(0, 0, &mctype, &mcfree, &mcformat) < 0) then
+	panic("mcGetInfo failed!")
+end
+debug_print("mc type: "..tostring(mctype).."\n")
+debug_print("bytes free: "..tostring(mctype).."\n")
+debug_print("mc format: "..tostring(mcformat).."\n")
+
+while true do end]]
+while true do end
