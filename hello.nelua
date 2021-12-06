@@ -13,5 +13,5 @@ end
 
 SifInitRpc(0)
 init_scr()
-debug_print("Testing from ".._VERSION.."\n")
+debug_print("Testing from ".._VERSION.."!\n")
 while true do end
