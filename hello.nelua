@@ -1,29 +1,6 @@
-local ps2date : type = @record {
-	unknown1: uint8,
-	sec: uint8,
-	min: uint8,
-	hour: uint8,
-	day: uint8,
-	month: uint8,
-	year: uint16
-}
-
-local mcTable : type <cimport, nodecl> = @record {
-	_create : ps2date,
-	_modify : ps2date,
-	fileSizeByte : uint32,
-	attrFile : uint16,
-	unknown3 : uint16,
-	unknown4 : [2]uint32,
-	name: [32]uint8
-}
-
 ## cinclude '<tamtypes.h>'
 ## cinclude '<debug.h>'
 ## cinclude '<sifrpc.h>'
-## cinclude '<libmc.h>'
-## cinclude '<loadfile.h>'
-## cinclude '<kernel.h>'
 
 local function SifInitRpc(mode : cint)  <cimport, nodecl> end
 local function init_scr()  <cimport, nodecl> end
